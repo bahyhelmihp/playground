@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auto-Fetch Coordinates</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    #output { margin-top: 1em; font-size: 1.2em; }
+  </style>
+</head>
+<body>
+  <h1>📍 Your Current Coordinates</h1>
+  <div id="output">Fetching location...</div>
+
+  <script>
+    const output = document.getElementById("output");
+
+    if (!navigator.geolocation) {
+      output.textContent = "Geolocation is not supported by your browser.";
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          output.textContent = `Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}`;
+        },
+        (error) => {
+          output.textContent = `Error: ${error.message}`;
+        }
+      );
+    }
+  </script>
+</body>
+</html>
