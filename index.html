@@ -1,30 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Auto-Fetch Coordinates</title>
+  <meta charset="UTF-8" />
+  <title>My Location on Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha384-kV0k5pV2cbnN7Yw8XjP5QERkRZAFzA2Ba2nH3vMEJ4QnLkYPxCNG6FKk6fiScUcj"
+    crossorigin=""
+  />
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 2em; }
-    #output { margin-top: 1em; font-size: 1.2em; }
+    body { font-family: sans-serif; text-align: center; padding: 1rem; }
+    #map { height: 80vh; width: 100%; margin-top: 1rem; border-radius: 12px; }
+    #coords { margin-top: 0.5rem; font-size: 1.1rem; }
   </style>
 </head>
 <body>
-  <h1>📍 Your Current Coordinates</h1>
-  <div id="output">Fetching location...</div>
+  <h1>📍 Your Location on the Map</h1>
+  <div id="coords">Getting location...</div>
+  <div id="map"></div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha384-IUwM2FxyGP4gRkHK2OB3sMWEKo0HkEP3i0O2xHzEPJkVZgxPhWw+d5Q1PTItY6fH"
+    crossorigin=""></script>
   <script>
-    const output = document.getElementById("output");
+    const coordsDiv = document.getElementById("coords");
 
     if (!navigator.geolocation) {
-      output.textContent = "Geolocation is not supported by your browser.";
+      coordsDiv.textContent = "Geolocation is not supported by your browser.";
     } else {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const { latitude, longitude } = position.coords;
-          output.textContent = `Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}`;
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          coordsDiv.textContent = `Latitude: ${lat.toFixed(6)}, Longitude: ${lon.toFixed(6)}`;
+
+          const map = L.map("map").setView([lat, lon], 15);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+          }).addTo(map);
+
+          L.marker([lat, lon]).addTo(map)
+            .bindPopup("📍 You are here")
+            .openPopup();
         },
-        (error) => {
-          output.textContent = `Error: ${error.message}`;
+        (err) => {
+          coordsDiv.textContent = `Error: ${err.message}`;
         }
       );
     }
